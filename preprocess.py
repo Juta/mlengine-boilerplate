@@ -12,7 +12,7 @@ from apache_beam.metrics import Metrics
 
 from tensorflow_transform import coders
 
-from trainer.config import BUCKET, DATA_DIR, PROJECT_ID, TFRECORD_DIR
+from trainer.config import BUCKET, PROJECT_ID, TFRECORD_DIR
 from trainer.util import schema
 
 partition_train = Metrics.counter('partition', 'train')
@@ -193,15 +193,17 @@ def main(argv=None):
     pipeline = beam.Pipeline(options=pipeline_options)
 
     all_labels = (pipeline | 'ReadDictionary' >> beam.io.ReadFromText(
-        DATA_DIR + 'dict.txt', strip_trailing_newlines=True))
+        'gs://cloud-ml-data/img/flower_photos/dict.txt',
+        strip_trailing_newlines=True))
 
      # TODO: adapt pipeline to use new functions defined above
      # use all_labels (array of all possible labels as sideinput in the pipeline)
     examples = (pipeline
                 # | 'ReadData' >> beam.Create(open('data/test.csv')
                 #                             .readlines()[1:])
-                | 'ReadData' >> beam.io.ReadFromText(DATA_DIR + '*',
-                                                     skip_header_lines=1)
+                | 'ReadData' >> beam.io.ReadFromText(
+                    'gs://cloud-ml-data/img/flower_photos/train_set.csv',
+                    strip_trailing_newlines=True)
                 | 'BuildExamples' >> beam.FlatMap(build_example))
 
     examples_split = examples | beam.Partition(partition_fn, 3)
