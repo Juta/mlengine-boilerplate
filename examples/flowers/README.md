@@ -46,10 +46,11 @@ python preprocess.py
 ## Training Tensorflow model
 You can submit a ML Engine training job with:
 ```
-gcloud ml-engine jobs submit training my_job \
+gcloud ml-engine jobs submit training flowers_job \
                 --module-name trainer.task \
-                --staging-bucket gs://<stating_bucket> \
-                --package-path trainer
+                --staging-bucket gs://<staging_bucket> \
+                --package-path trainer \
+                --region europe-west1
 ```
 Testing it locally:
 ```

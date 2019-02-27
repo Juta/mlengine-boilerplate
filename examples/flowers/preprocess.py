@@ -10,7 +10,7 @@ import apache_beam as beam
 from apache_beam.metrics import Metrics
 from tensorflow_transform import coders
 
-from trainer.config import PROJECT_ID, DATA_DIR, TFRECORD_DIR, NUM_LABELS
+from trainer.config import PROJECT_ID, TFRECORD_DIR, NUM_LABELS
 from trainer.util import schema, read_image
 
 logging.warning('running preprocess')
@@ -199,11 +199,13 @@ def main(argv=None):
     pipeline = beam.Pipeline(options = pipeline_options)
 
     all_labels = (pipeline | 'ReadDictionary' >> beam.io.ReadFromText(
-      DATA_DIR + 'dict.txt', strip_trailing_newlines=True))
+        'gs://cloud-ml-data/img/flower_photos/dict.txt',
+        strip_trailing_newlines=True))
 
     examples = (pipeline
                 | 'ReadData' >> beam.io.ReadFromText(
-                    'gs://cloud-ml-data/img/flower_photos/train_set.csv', strip_trailing_newlines=True)
+                    'gs://cloud-ml-data/img/flower_photos/train_set.csv',
+                    strip_trailing_newlines=True)
                 | 'Split' >> beam.FlatMap(select_files)
                 | 'OneHotEncoding' >> beam.FlatMap(one_hot_encoding,
                                            beam.pvalue.AsIter(all_labels))

@@ -1,7 +1,5 @@
 #!/usr/bin/python
 PROJECT_ID = '<your-project>'
-
-DATA_DIR = 'gs://<your-bucket>/data/'
 TFRECORD_DIR = 'gs://<your-bucket>/tfrecords-all/'
 MODEL_DIR = 'gs://<your-bucket>/model/'
 MODEL_NAME = 'flowers'
